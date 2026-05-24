@@ -514,6 +514,7 @@ class SettingsWindow: NSWindow {
         sidebarScrollView.documentView = sidebarTableView
         sidebarScrollView.translatesAutoresizingMaskIntoConstraints = false
         parent.addSubview(sidebarScrollView)
+        let bottomAnchor = LicenseManager.localUnlocksAllFeatures ? quitButton.topAnchor : upgradeButton.topAnchor
         NSLayoutConstraint.activate([
             sidebarScrollView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 12),
             // The scroll view sits flush to the sidebar edges. The `.sourceList` selection style
@@ -523,11 +524,12 @@ class SettingsWindow: NSWindow {
             // too far in.
             sidebarScrollView.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
             sidebarScrollView.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            sidebarScrollView.bottomAnchor.constraint(equalTo: upgradeButton.topAnchor, constant: -10),
+            sidebarScrollView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
         ])
     }
 
     private func setupUpgradeButton(_ parent: NSView) {
+        guard !LicenseManager.localUnlocksAllFeatures else { return }
         upgradeButton.target = self
         upgradeButton.action = #selector(upgradeButtonClicked)
         upgradeButton.translatesAutoresizingMaskIntoConstraints = false

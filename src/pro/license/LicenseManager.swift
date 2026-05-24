@@ -1,6 +1,8 @@
 import Foundation
 
 class LicenseManager {
+    /// Personal fork policy: all features are available in local builds without trial/license gates.
+    static let localUnlocksAllFeatures = true
     static let keychainService = "\(App.bundleIdentifier).license"
     static let defaultsSuiteName = "\(App.bundleIdentifier).license"
 
@@ -59,12 +61,13 @@ class LicenseManager {
         return Self.lifetimeVariants.contains(variant)
     }
 
-    var isProAvailable: Bool { state.isProAvailable }
+    var isProAvailable: Bool { Self.localUnlocksAllFeatures || state.isProAvailable }
 
     /// Pro features are locked out as soon as the license is no longer valid. Degradable Pro
     /// preferences are downgraded to their Free equivalents immediately via
     /// `ProTransitionManager.onProLockEngaged()`, wired to the state-change hook in App.swift.
     var isProLocked: Bool {
+        guard !Self.localUnlocksAllFeatures else { return false }
         switch state {
         case .pro, .trial: return false
         case .proExpired, .trialExpired: return true
@@ -174,6 +177,7 @@ class LicenseManager {
     }
 
     func computeState() -> LicenseState {
+        guard !Self.localUnlocksAllFeatures else { return .pro }
         if keychain.value(account: Self.keychainKeyAccount) != nil {
             let lastValidationResult = defaults.bool(forKey: "lastValidationResult")
             guard lastValidationResult else { return .trialExpired }

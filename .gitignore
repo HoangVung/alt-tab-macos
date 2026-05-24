@@ -15,8 +15,12 @@ codesign.conf
 codesign.crt
 codesign.key
 codesign.p12
+local-self.crt
+local-self.key
+local-self.p12
 /.claude/*
 !/.claude/skills/
+/.agents/
 /config/local.xcconfig
 /scripts/l10n/missing-translations.json
 /ai/output/
